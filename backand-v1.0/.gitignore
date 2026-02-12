@@ -1,0 +1,29 @@
+# Arquivos de classe compilados
+*.class
+
+# Pacotes (JAR, WAR, EAR)
+*.jar
+*.war
+*.ear
+
+# Pastas de build
+target/
+build/
+bin/
+
+# IDEs (IntelliJ, Eclipse, NetBeans, VS Code)
+.idea/
+.settings/
+.project
+.classpath
+.factorypath
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Arquivos de sistema e temporários
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
