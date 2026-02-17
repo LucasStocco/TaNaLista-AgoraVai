@@ -1,28 +1,33 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/item.dart';
+import '../config/api_config.dart';
 
 class ItemService {
-  static const String baseUrl = 'http://192.168.15.71:8088';
-
-  // LISTAR ITENS
+  // Base URL do backend (IP CORRETO)
+  static const String baseUrl = ApiConfig.baseUrl;
+  // LISTAR ITENS de uma lista específica
   Future<List<Item>> listar(int listaId) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/listas/$listaId/itens'),
-    );
+    final url = Uri.parse('$baseUrl/listas/$listaId/itens');
+
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
       return data.map((e) => Item.fromJson(e)).toList();
     } else {
-      throw Exception('Erro ao listar itens: ${response.statusCode}');
+      throw Exception(
+        'Erro ao listar itens: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 
-  // CRIAR ITEM
+  // CRIAR ITEM em uma lista específica
   Future<Item> criar(int listaId, Item item) async {
+    final url = Uri.parse('$baseUrl/listas/$listaId/itens');
+
     final response = await http.post(
-      Uri.parse('$baseUrl/listas/$listaId/itens'),
+      url,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(item.toJson()),
     );
@@ -36,10 +41,12 @@ class ItemService {
     }
   }
 
-  // ATUALIZAR ITEM
+  // ATUALIZAR ITEM existente
   Future<Item> atualizar(int listaId, Item item) async {
+    final url = Uri.parse('$baseUrl/listas/$listaId/itens/${item.id}');
+
     final response = await http.put(
-      Uri.parse('$baseUrl/listas/$listaId/itens/${item.id}'),
+      url,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(item.toJson()),
     );
@@ -55,12 +62,14 @@ class ItemService {
 
   // DELETAR ITEM
   Future<void> deletar(int listaId, int itemId) async {
-    final response = await http.delete(
-      Uri.parse('$baseUrl/listas/$listaId/itens/$itemId'),
-    );
+    final url = Uri.parse('$baseUrl/listas/$listaId/itens/$itemId');
+
+    final response = await http.delete(url);
 
     if (response.statusCode != 204) {
-      throw Exception('Erro ao deletar item: ${response.statusCode}');
+      throw Exception(
+        'Erro ao deletar item: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 }

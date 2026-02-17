@@ -12,6 +12,7 @@ dependencies:
     sdk: flutter
   http: ^1.6.0
   cupertino_icons: ^1.0.8
+  google_fonts: ^6.0.0 
 
 dev_dependencies:
   flutter_test:
@@ -21,10 +22,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # Aqui você pode adicionar assets ou fontes personalizadas, se quiser
-  # assets:
-  #   - images/
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+  assets:
+    - assets/icons/
+    - assets/images/
