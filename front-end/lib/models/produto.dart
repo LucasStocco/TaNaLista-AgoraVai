@@ -7,17 +7,19 @@ class Produto {
 
   Produto({this.id, required this.nome, required this.tipo});
 
+  // Cria um objeto Produto a partir de JSON
   factory Produto.fromJson(Map<String, dynamic> json) {
     return Produto(
-      id: json['id'],
-      nome: json['nome'],
-      tipo: Categoria.fromJson(json['tipo']),
+      id: json['id'] is int
+          ? json['id'] as int
+          : int.tryParse(json['id'].toString()),
+      nome: json['nome'] as String,
+      tipo: Categoria.fromJson(json['tipo'] as Map<String, dynamic>),
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'nome': nome,
-    'tipo': tipo.toJson(),
-  };
+  // Converte o objeto Produto para JSON
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'nome': nome, 'tipo': tipo.toJson()};
+  }
 }

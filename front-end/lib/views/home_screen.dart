@@ -1,10 +1,12 @@
-import 'package:crud_flutter/views/criar_nova_lista_screen.dart';
+import 'package:crud_flutter/views/categorias_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../models/categoria.dart';
+import 'categoria_detalhes_screen.dart';
+import 'criar_nova_lista_screen.dart';
 import 'minhas_listas_screen.dart';
 import 'user_screen.dart';
 import 'settings_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'categorias_screen.dart';
 import 'relatorio_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,25 +19,94 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  static final List<Widget> _pages = <Widget>[
-    const Center(child: Text('Home', style: TextStyle(fontSize: 24))),
-    const CategoriasScreen(),
-    const MinhasListasScreen(),
-    const RelatorioScreen(),
-  ];
+  late final List<Widget> _pages;
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // Linha de cards da Home
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildCategoryCard(
+                    'assets/icons/ic_bebidas.png',
+                    'Bebidas',
+                    1,
+                  ),
+                  _buildCategoryCard(
+                    'assets/icons/ic_hortifrut.png',
+                    'Hortifrut',
+                    4,
+                  ),
+                  _buildCategoryCard(
+                    'assets/icons/ic_padaria.png',
+                    'Padaria',
+                    3,
+                  ),
+                  _buildCategoryCard(
+                    'assets/icons/ic_acougue.png',
+                    'Carnes',
+                    2,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.asset(
+                'assets/images/img_super_oferta.jpg',
+                width: double.infinity,
+                height: 250,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
+      ),
+      const CategoriasScreen(), // Ícone "fastfood"
+      const SizedBox(), // "+" botão, só abre nova tela
+      const MinhasListasScreen(), // Lista
+      const RelatorioScreen(), // Relatórios
+    ];
   }
 
-  Widget _buildCategoryCard(String imagePath, String label) {
+  void _onItemTapped(int index) {
+    if (index == 2) {
+      // botão "+" abre criar nova lista
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const CriarNovaListaScreen()),
+      );
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
+  Widget _buildCategoryCard(String imagePath, String label, int id) {
     return GestureDetector(
       onTap: () {
+        final categoria = Categoria(id: id, nome: label);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const CategoriasScreen()),
+          MaterialPageRoute(
+            builder: (_) =>
+                CategoriaDetalhesScreen(nomeCategoria: categoria.nome),
+          ),
         );
       },
       child: Container(
@@ -66,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // TOPBAR fixa
+      backgroundColor: Colors.white,
       appBar: AppBar(
         toolbarHeight: 120,
         backgroundColor: Colors.red,
@@ -81,88 +152,21 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.person, color: Colors.white),
-
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const UserScreen()),
-              );
-            },
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const UserScreen()),
+            ),
           ),
-
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.white),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SettingsScreen()),
-              );
-            },
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            ),
           ),
         ],
       ),
-
-      // CONTEÚDO DO MEIO
-      body: _selectedIndex == 0
-          ? SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // Cards aparecem SOMENTE na Home
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildCategoryCard(
-                          'assets/icons/ic_bebidas.png',
-                          'Bebidas',
-                        ),
-                        _buildCategoryCard(
-                          'assets/icons/ic_hortifrut.png',
-                          'Hortifrut',
-                        ),
-                        _buildCategoryCard(
-                          'assets/icons/ic_padaria.png',
-                          'Padaria',
-                        ),
-                        _buildCategoryCard(
-                          'assets/icons/ic_acougue.png',
-                          'Carnes',
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  //IMAGEM DE SUPER OFERTA
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.asset(
-                      'assets/images/img_super_oferta.jpg',
-                      width: double.infinity,
-                      height: 250,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  const SizedBox(height: 24),
-                ],
-              ),
-            )
-          : _pages[_selectedIndex],
-
-      // BOTTOM NAVIGATION BAR fixa
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
@@ -170,19 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
         unselectedItemColor: Colors.grey,
         showSelectedLabels: false,
         showUnselectedLabels: false,
-        onTap: (index) {
-          if (index == 2) {
-            // "+" abre tela de criar nova lista
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const CriarNovaListaScreen()),
-            );
-          } else if (index > 2) {
-            _onItemTapped(index - 1); // ajusta índice porque "+" não é página
-          } else {
-            _onItemTapped(index);
-          }
-        },
+        onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.fastfood), label: ''),
