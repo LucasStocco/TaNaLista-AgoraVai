@@ -46,7 +46,7 @@ class _MinhasListasScreenState extends State<MinhasListasScreen> {
                     // ignore: unnecessary_null_comparison
                     subtitle: lista.dataCriacao != null
                         ? Text(
-                            'Criada em ${lista.dataCriacao!.day}/${lista.dataCriacao!.month}/${lista.dataCriacao!.year}',
+                            'Criada em ${lista.dataCriacao.day}/${lista.dataCriacao.month}/${lista.dataCriacao.year}',
                           )
                         : null,
                     trailing: const Icon(Icons.arrow_forward_ios),
