@@ -3,11 +3,15 @@ package br.com.prototype.listacompras.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.prototype.listacompras.dto.ProdutoRequestDTO;
+import br.com.prototype.listacompras.dto.ProdutoResponseDTO;
 import br.com.prototype.listacompras.model.Produto;
+import br.com.prototype.listacompras.model.Categoria;
 import br.com.prototype.listacompras.repository.ProdutoRepository;
+import br.com.prototype.listacompras.repository.CategoriaRepository;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProdutoService {
@@ -15,32 +19,69 @@ public class ProdutoService {
     @Autowired
     private ProdutoRepository produtoRepository;
 
-    public List<Produto> listarTodos() {
-        return produtoRepository.findAll();
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+
+    public List<ProdutoResponseDTO> listarTodos() {
+        return produtoRepository.findAll()
+                .stream()
+                .map(this::converterParaDTO)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Produto> buscarPorId(Long id) {
-        return produtoRepository.findById(id);
+    public ProdutoResponseDTO buscarPorId(Long id) {
+        Produto produto = produtoRepository.findById(id).orElse(null);
+        return produto != null ? converterParaDTO(produto) : null;
     }
 
-    public Produto criar(Produto produto) {
-        return produtoRepository.save(produto);
+    public ProdutoResponseDTO criar(ProdutoRequestDTO dto) {
+
+        Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+
+        Produto produto = new Produto();
+        produto.setNome(dto.getNome());
+        produto.setCategoria(categoria);
+
+        Produto salvo = produtoRepository.save(produto);
+
+        return converterParaDTO(salvo);
     }
 
-    public Produto atualizar(Long id, Produto produtoAtualizado) {
-        return produtoRepository.findById(id)
-                .map(produto -> {
-                    produto.setNome(produtoAtualizado.getNome());
-                    produto.setCategoria(produtoAtualizado.getCategoria());
-                    return produtoRepository.save(produto);
-                }).orElse(null);
+    public ProdutoResponseDTO atualizar(Long id, ProdutoRequestDTO dto) {
+
+        Produto produto = produtoRepository.findById(id).orElse(null);
+        if (produto == null) return null;
+
+        Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+
+        produto.setNome(dto.getNome());
+        produto.setCategoria(categoria);
+
+        Produto atualizado = produtoRepository.save(produto);
+
+        return converterParaDTO(atualizado);
     }
 
     public boolean deletar(Long id) {
-        return produtoRepository.findById(id)
-                .map(produto -> {
-                    produtoRepository.delete(produto);
-                    return true;
-                }).orElse(false);
+
+        Produto produto = produtoRepository.findById(id).orElse(null);
+        if (produto == null) return false;
+
+        produtoRepository.delete(produto);
+        return true;
+    }
+
+    private ProdutoResponseDTO converterParaDTO(Produto produto) {
+
+        ProdutoResponseDTO dto = new ProdutoResponseDTO();
+
+        dto.setId(produto.getId());
+        dto.setNome(produto.getNome());
+        dto.setCategoriaId(produto.getCategoria().getId());
+        dto.setCategoriaNome(produto.getCategoria().getNome());
+
+        return dto;
     }
 }

@@ -4,8 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import br.com.prototype.listacompras.model.Lista;
 import br.com.prototype.listacompras.service.ListaService;
+import br.com.prototype.listacompras.dto.ListaRequestDTO;
+import br.com.prototype.listacompras.dto.ListaResponseDTO;
+
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -16,33 +19,51 @@ public class ListaController {
     @Autowired
     private ListaService listaService;
 
+    // CRIAR LISTA
     @PostMapping
-    public ResponseEntity<Lista> criarLista(@RequestBody Lista lista) {
-        Lista nova = listaService.criar(lista);
+    public ResponseEntity<ListaResponseDTO> criarLista(
+            @Valid @RequestBody ListaRequestDTO dto) {
+
+        ListaResponseDTO nova = listaService.criar(dto);
         return ResponseEntity.ok(nova);
     }
 
+    // LISTAR TODAS
     @GetMapping
-    public List<Lista> listarListas() {
-        return listaService.listarTodas();
+    public ResponseEntity<List<ListaResponseDTO>> listarListas() {
+        return ResponseEntity.ok(listaService.listarTodas());
     }
 
+    // BUSCAR POR ID
     @GetMapping("/{id}")
-    public ResponseEntity<Lista> buscarLista(@PathVariable Long id) {
+    public ResponseEntity<ListaResponseDTO> buscarLista(@PathVariable Long id) {
+
         return listaService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // ATUALIZAR
     @PutMapping("/{id}")
-    public ResponseEntity<Lista> atualizarLista(@PathVariable Long id, @RequestBody Lista listaAtualizada) {
-        Lista atualizada = listaService.atualizar(id, listaAtualizada);
-        return atualizada != null ? ResponseEntity.ok(atualizada) : ResponseEntity.notFound().build();
+    public ResponseEntity<ListaResponseDTO> atualizarLista(
+            @PathVariable Long id,
+            @Valid @RequestBody ListaRequestDTO dto) {
+
+        ListaResponseDTO atualizada = listaService.atualizar(id, dto);
+
+        return atualizada != null
+                ? ResponseEntity.ok(atualizada)
+                : ResponseEntity.notFound().build();
     }
 
+    // DELETAR
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarLista(@PathVariable Long id) {
+
         boolean deletado = listaService.deletar(id);
-        return deletado ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+
+        return deletado
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

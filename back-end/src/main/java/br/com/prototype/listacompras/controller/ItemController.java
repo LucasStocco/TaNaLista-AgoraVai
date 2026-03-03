@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import br.com.prototype.listacompras.model.Item;
+import br.com.prototype.listacompras.dto.ItemRequestDTO;
+import br.com.prototype.listacompras.dto.ItemResponseDTO;
 import br.com.prototype.listacompras.service.ItemService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/listas/{listaId}/itens")
@@ -16,54 +19,59 @@ public class ItemController {
     @Autowired
     private ItemService itemService;
 
-    // CREATE
+    // ---------------- CREATE ----------------
     @PostMapping
-    public ResponseEntity<Item> criarItem(
+    public ResponseEntity<ItemResponseDTO> criarItem(
             @PathVariable Long listaId,
-            @RequestBody Item item
+            @Valid @RequestBody ItemRequestDTO itemDTO
     ) {
-        Item novoItem = itemService.criar(listaId, item);
-        return ResponseEntity.ok(novoItem);
+        ItemResponseDTO novoItem = itemService.criar(listaId, itemDTO);
+        return ResponseEntity.status(201).body(novoItem);
     }
 
-    // READ ALL (por lista)
+    // ---------------- READ ALL ----------------
     @GetMapping
-    public List<Item> listarItens(@PathVariable Long listaId) {
-        return itemService.listarPorLista(listaId);
+    public ResponseEntity<List<ItemResponseDTO>> listarItens(
+            @PathVariable Long listaId
+    ) {
+        List<ItemResponseDTO> itens = itemService.listarPorLista(listaId);
+        return ResponseEntity.ok(itens);
     }
 
-    // READ ONE
+    // ---------------- READ ONE ----------------
     @GetMapping("/{id}")
-    public ResponseEntity<Item> buscarPorId(
+    public ResponseEntity<ItemResponseDTO> buscarPorId(
             @PathVariable Long listaId,
             @PathVariable Long id
     ) {
-        Item item = itemService.buscarPorId(listaId, id);
+        ItemResponseDTO item = itemService.buscarPorId(listaId, id);
+
         return item != null
                 ? ResponseEntity.ok(item)
                 : ResponseEntity.notFound().build();
     }
 
-    // UPDATE
+    // ---------------- UPDATE ----------------
     @PutMapping("/{id}")
-    public ResponseEntity<Item> atualizarItem(
+    public ResponseEntity<ItemResponseDTO> atualizarItem(
             @PathVariable Long listaId,
             @PathVariable Long id,
-            @RequestBody Item itemAtualizado
+            @Valid @RequestBody ItemRequestDTO itemDTO
     ) {
-        Item atualizado = itemService.atualizar(id, itemAtualizado);
+        ItemResponseDTO atualizado = itemService.atualizar(listaId, id, itemDTO);
+
         return atualizado != null
                 ? ResponseEntity.ok(atualizado)
                 : ResponseEntity.notFound().build();
     }
 
-    // DELETE
+    // ---------------- DELETE ----------------
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarItem(
             @PathVariable Long listaId,
             @PathVariable Long id
     ) {
-        boolean deletado = itemService.deletar(id);
+        boolean deletado = itemService.deletar(listaId, id);
 
         return deletado
                 ? ResponseEntity.noContent().build()
