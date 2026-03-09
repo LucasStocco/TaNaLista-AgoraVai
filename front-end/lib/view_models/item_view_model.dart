@@ -7,30 +7,40 @@ class ItemViewModel {
   List<Item> itens = [];
   bool isLoading = false;
 
-  // 📌 LISTAR ITENS
+  // LISTAR ITENS
   Future<void> carregar(int listaId) async {
-    isLoading = true;
-    itens = await _service.listar(listaId);
-    isLoading = false;
-  }
-
-  // ➕ CRIAR ITEM
-  Future<void> criar(int listaId, Item item) async {
-    final novoItem = await _service.criar(listaId, item);
-    itens.add(novoItem);
-  }
-
-  // ✏️ ATUALIZAR ITEM
-  Future<void> atualizar(int listaId, Item item) async {
-    final itemAtualizado = await _service.atualizar(listaId, item);
-
-    final index = itens.indexWhere((i) => i.id == itemAtualizado.id);
-    if (index != -1) {
-      itens[index] = itemAtualizado;
+    try {
+      isLoading = true;
+      itens = await _service.listar(listaId);
+    } finally {
+      isLoading = false;
     }
   }
 
-  // 🗑️ DELETAR ITEM
+  // CRIAR ITEM
+  Future<void> criar(int listaId, Item item) async {
+    final Item? novoItem = await _service.criar(listaId, item);
+
+    // se API não retornar body, usamos o próprio item criado
+    if (novoItem != null) {
+      itens.add(novoItem);
+    } else {
+      itens.add(item);
+    }
+  }
+
+  // ATUALIZAR ITEM
+  Future<void> atualizar(int listaId, Item item) async {
+    final Item? itemAtualizado = await _service.atualizar(listaId, item);
+
+    final index = itens.indexWhere((i) => i.id == item.id);
+
+    if (index != -1) {
+      itens[index] = itemAtualizado ?? item;
+    }
+  }
+
+  // DELETAR ITEM
   Future<void> deletar(int listaId, int itemId) async {
     await _service.deletar(listaId, itemId);
     itens.removeWhere((i) => i.id == itemId);

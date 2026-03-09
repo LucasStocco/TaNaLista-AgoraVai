@@ -4,9 +4,9 @@ import '../models/item.dart';
 import '../config/api_config.dart';
 
 class ItemService {
-  // Base URL do backend (IP CORRETO)
   static const String baseUrl = ApiConfig.baseUrl;
-  // LISTAR ITENS de uma lista específica
+
+  // LISTAR ITENS
   Future<List<Item>> listar(int listaId) async {
     final url = Uri.parse('$baseUrl/listas/$listaId/itens');
 
@@ -22,8 +22,8 @@ class ItemService {
     }
   }
 
-  // CRIAR ITEM em uma lista específica
-  Future<Item> criar(int listaId, Item item) async {
+  // CRIAR ITEM
+  Future<Item?> criar(int listaId, Item item) async {
     final url = Uri.parse('$baseUrl/listas/$listaId/itens');
 
     final response = await http.post(
@@ -33,7 +33,16 @@ class ItemService {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return Item.fromJson(jsonDecode(response.body));
+      // DEBUG (pode remover depois)
+      print("STATUS: ${response.statusCode}");
+      print("BODY: ${response.body}");
+
+      if (response.body.isEmpty) {
+        return null;
+      }
+
+      final data = jsonDecode(response.body);
+      return Item.fromJson(data);
     } else {
       throw Exception(
         'Erro ao criar item: ${response.statusCode} - ${response.body}',
@@ -41,8 +50,8 @@ class ItemService {
     }
   }
 
-  // ATUALIZAR ITEM existente
-  Future<Item> atualizar(int listaId, Item item) async {
+  // ATUALIZAR ITEM
+  Future<Item?> atualizar(int listaId, Item item) async {
     final url = Uri.parse('$baseUrl/listas/$listaId/itens/${item.id}');
 
     final response = await http.put(
@@ -52,7 +61,12 @@ class ItemService {
     );
 
     if (response.statusCode == 200) {
-      return Item.fromJson(jsonDecode(response.body));
+      if (response.body.isEmpty) {
+        return null;
+      }
+
+      final data = jsonDecode(response.body);
+      return Item.fromJson(data);
     } else {
       throw Exception(
         'Erro ao atualizar item: ${response.statusCode} - ${response.body}',

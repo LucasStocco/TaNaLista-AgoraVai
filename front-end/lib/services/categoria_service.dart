@@ -1,25 +1,26 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '../models/categoria.dart';
-
-// Categoria Service é responsável por buscar os dados da API/BANCO sem se preucupar com UI.
+import '../config/api_config.dart';
 
 class CategoriaService {
-  Future<List<Categoria>> getAll() async {
-    // Simulação de fetch
-    await Future.delayed(const Duration(seconds: 1));
+  // 📌 Buscar todas categorias
+  Future<List<Categoria>> buscarCategorias() async {
+    final url = Uri.parse('${ApiConfig.baseUrl}/categorias');
 
-    return [
-      Categoria(id: 1, nome: 'Bebidas'),
-      Categoria(id: 2, nome: 'Carnes'),
-      Categoria(id: 3, nome: 'Padaria'),
-      Categoria(id: 4, nome: 'Hortifrut'),
-      Categoria(id: 5, nome: 'Laticínios'),
-      Categoria(id: 6, nome: 'Mercearia'),
-      Categoria(id: 7, nome: 'Higiene'),
-      Categoria(id: 8, nome: 'Limpeza'),
-      Categoria(id: 9, nome: 'Pets'),
-      Categoria(id: 10, nome: 'Sazonais'),
-      Categoria(id: 11, nome: 'Bebes'),
-      Categoria(id: 12, nome: 'Outros'),
-    ];
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+
+      // Garantir que cada item seja um Map<String, dynamic>
+      return data
+          .map((jsonItem) =>
+              Categoria.fromJson(jsonItem as Map<String, dynamic>))
+          .toList();
+    } else {
+      throw Exception(
+          'Erro ao buscar categorias: ${response.statusCode} - ${response.body}');
+    }
   }
 }

@@ -21,7 +21,7 @@ class _CategoriasScreenState extends State<CategoriasScreen> {
     // Carrega as categorias do ViewModel assim que a tela é aberta
     // Future.microtask garante que seja chamado após o build inicial
     Future.microtask(
-      () => Provider.of<CategoriaViewModel>(context, listen: false).carregar(),
+      () => Provider.of<CategoriaViewModel>(context, listen: false).carregarCategorias(),
     );
   }
 

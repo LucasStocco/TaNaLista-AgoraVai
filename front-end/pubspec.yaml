@@ -1,20 +1,20 @@
 name: crud_flutter
-description: "A new Flutter project."
+description: A new Flutter project.
 publish_to: 'none'
 
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.8.1
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  provider: ^6.0.5
-  http: ^1.6.0
   cupertino_icons: ^1.0.8
-  google_fonts: ^6.0.0 
+  provider: ^6.1.2
+  http: ^1.2.1
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:

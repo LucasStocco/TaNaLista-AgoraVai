@@ -1,9 +1,12 @@
+import 'categoria.dart';
+
 class Item {
   final int? id;
   final String nome;
   final String? descricao;
   final int quantidade;
   final double preco;
+  final Categoria categoria;
 
   Item({
     this.id,
@@ -11,6 +14,7 @@ class Item {
     this.descricao,
     required this.quantidade,
     required this.preco,
+    required this.categoria,
   });
 
   factory Item.fromJson(Map<String, dynamic> json) {
@@ -20,16 +24,25 @@ class Item {
       descricao: json['descricao'],
       quantidade: json['quantidade'],
       preco: (json['preco'] as num).toDouble(),
+      categoria: Categoria.fromJson(
+        json['categoria'] ?? {'id': 0, 'nome': 'Sem Categoria'},
+      ),
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
+    final Map<String, dynamic> data = {
       'nome': nome,
-      'descricao': descricao,
       'quantidade': quantidade,
       'preco': preco,
+      'categoriaId': categoria.id,
     };
+
+    // adiciona descricao somente se não for nula ou vazia
+    if (descricao != null && descricao!.isNotEmpty) {
+      data['descricao'] = descricao;
+    }
+
+    return data;
   }
 }

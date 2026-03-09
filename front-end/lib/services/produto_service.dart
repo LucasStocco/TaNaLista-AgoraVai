@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/produto.dart';
+import '../config/api_config.dart';
 
 class ProdutoService {
-  static const String baseUrl = 'http://192.168.68.62:8088/itens';
+  static const String baseUrl = '${ApiConfig.baseUrl}/itens';
 
   Future<List<Produto>> getAll() async {
     final response = await http.get(Uri.parse(baseUrl));
