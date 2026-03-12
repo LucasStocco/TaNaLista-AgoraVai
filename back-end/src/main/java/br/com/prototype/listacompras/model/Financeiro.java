@@ -12,4 +12,5 @@ public class Financeiro {
 	String NomeCategoria();
 	BigDecimal getTotalGasto();
 } 
+
 }
