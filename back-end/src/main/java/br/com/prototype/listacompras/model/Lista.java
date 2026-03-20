@@ -14,7 +14,7 @@ public class Lista {
 
     private String nome;
 
-    private LocalDateTime dataCriacao = LocalDateTime.now();
+    private LocalDateTime dataConclusao = LocalDateTime.now();
 
     @OneToMany(mappedBy = "lista", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Item> itens = new ArrayList<>();
@@ -37,8 +37,8 @@ public class Lista {
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
 
-    public LocalDateTime getDataCriacao() { return dataCriacao; }
-    public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }
+    public LocalDateTime getDataConclusao() { return dataConclusao; }
+    public void dataConclusao(LocalDateTime dataConclusao) { this.dataConclusao = dataConclusao; }
 
     public List<Item> getItens() { return itens; }
     public void setItens(List<Item> itens) { this.itens = itens; }

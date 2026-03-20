@@ -66,7 +66,7 @@ public class ListaService {
         return new ListaResponseDTO(
                 lista.getId(),
                 lista.getNome(),
-                lista.getDataCriacao()
+                lista.getDataConclusao()
         );
     }
 }

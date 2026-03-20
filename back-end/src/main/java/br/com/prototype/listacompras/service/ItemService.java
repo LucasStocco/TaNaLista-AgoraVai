@@ -10,10 +10,10 @@ import br.com.prototype.listacompras.dto.ItemRequestDTO;
 import br.com.prototype.listacompras.dto.ItemResponseDTO;
 import br.com.prototype.listacompras.model.Item;
 import br.com.prototype.listacompras.model.Lista;
-import br.com.prototype.listacompras.model.Categoria;
+import br.com.prototype.listacompras.model.Produto;
 import br.com.prototype.listacompras.repository.ItemRepository;
 import br.com.prototype.listacompras.repository.ListaRepository;
-import br.com.prototype.listacompras.repository.CategoriaRepository;
+import br.com.prototype.listacompras.repository.ProdutoRepository;
 
 @Service
 public class ItemService {
@@ -25,7 +25,7 @@ public class ItemService {
     private ListaRepository listaRepository;
 
     @Autowired
-    private CategoriaRepository categoriaRepository;
+    private ProdutoRepository produtoRepository;
 
     // ---------------- CREATE ----------------
     public ItemResponseDTO criar(Long listaId, ItemRequestDTO dto) {
@@ -33,19 +33,13 @@ public class ItemService {
         Lista lista = listaRepository.findById(listaId)
                 .orElseThrow(() -> new RuntimeException("Lista não encontrada"));
 
+        Produto produto = produtoRepository.findById(dto.getProdutoId())
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
         Item item = new Item();
-        item.setNome(dto.getNome());
-        item.setDescricao(dto.getDescricao());
-        item.setPreco(dto.getPreco());
         item.setQuantidade(dto.getQuantidade());
         item.setLista(lista);
-
-        if (dto.getCategoriaId() != null) {
-            Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
-                    .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
-            item.setCategoria(categoria);
-        }
-
+        item.setProduto(produto);
         item.setComprado(dto.getComprado() != null ? dto.getComprado() : false);
 
         Item salvo = itemRepository.save(item);
@@ -65,8 +59,7 @@ public class ItemService {
     // ---------------- READ ONE ----------------
     public ItemResponseDTO buscarPorId(Long listaId, Long itemId) {
 
-        Item item = itemRepository.findById(itemId)
-                .orElse(null);
+        Item item = itemRepository.findById(itemId).orElse(null);
 
         if (item == null || !item.getLista().getId().equals(listaId)) {
             return null;
@@ -78,24 +71,18 @@ public class ItemService {
     // ---------------- UPDATE ----------------
     public ItemResponseDTO atualizar(Long listaId, Long id, ItemRequestDTO dto) {
 
-        Item item = itemRepository.findById(id)
-                .orElse(null);
+        Item item = itemRepository.findById(id).orElse(null);
 
         if (item == null || !item.getLista().getId().equals(listaId)) {
             return null;
         }
 
-        item.setNome(dto.getNome());
-        item.setDescricao(dto.getDescricao());
-        item.setPreco(dto.getPreco());
         item.setQuantidade(dto.getQuantidade());
 
-        if (dto.getCategoriaId() != null) {
-            Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
-                    .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
-            item.setCategoria(categoria);
-        } else {
-            item.setCategoria(null);
+        if (dto.getProdutoId() != null) {
+            Produto produto = produtoRepository.findById(dto.getProdutoId())
+                    .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+            item.setProduto(produto);
         }
 
         if (dto.getComprado() != null) {
@@ -110,8 +97,7 @@ public class ItemService {
     // ---------------- DELETE ----------------
     public boolean deletar(Long listaId, Long id) {
 
-        Item item = itemRepository.findById(id)
-                .orElse(null);
+        Item item = itemRepository.findById(id).orElse(null);
 
         if (item == null || !item.getLista().getId().equals(listaId)) {
             return false;
@@ -127,15 +113,12 @@ public class ItemService {
         ItemResponseDTO dto = new ItemResponseDTO();
 
         dto.setId(item.getId());
-        dto.setNome(item.getNome());
-        dto.setDescricao(item.getDescricao());
-        dto.setPreco(item.getPreco());
         dto.setQuantidade(item.getQuantidade());
         dto.setComprado(item.getComprado());
         dto.setListaId(item.getLista().getId());
 
-        if (item.getCategoria() != null) {
-            dto.setCategoriaId(item.getCategoria().getId());
+        if (item.getProduto() != null) {
+            dto.setProdutoId(item.getProduto().getId());
         }
 
         return dto;
