@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.1
+    container_name: tanalista-db
+    environment:
+      MYSQL_ROOT_PASSWORD: Allrsm_2018
+      MYSQL_DATABASE: appcompras
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  backend:
+    image: tanalista-backend:1.0
+    container_name: tanalista-back
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db   # aqui usamos a mesma variável que o application.properties espera
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Allrsm_2018
+    ports:
+      - "8088:8088"
+    networks:
+      - app-network
+
+volumes:
+  db-data:
+
+networks:
+  app-network:
