@@ -1,7 +1,22 @@
+<<<<<<< HEAD
 # Arquivos de classe compilados
 *.class
 
 # Pacotes (JAR, WAR, EAR)
+=======
+# ===============================
+# Git Ignore do projeto TaNaLista
+# ===============================
+
+# -------------------------------
+# BACK-END (Java / Spring Boot)
+# -------------------------------
+
+# Arquivos de classe compilados
+*.class
+
+# Pacotes compilados
+>>>>>>> develop
 *.jar
 *.war
 *.ear
@@ -11,7 +26,11 @@ target/
 build/
 bin/
 
+<<<<<<< HEAD
 # IDEs (IntelliJ, Eclipse, NetBeans, VS Code)
+=======
+# IDEs / Editor
+>>>>>>> develop
 .idea/
 .settings/
 .project
@@ -27,3 +46,52 @@ bin/
 Thumbs.db
 *.log
 *.tmp
+<<<<<<< HEAD
+=======
+
+# -------------------------------
+# FRONT-END (Flutter)
+# -------------------------------
+
+# Pastas de build e cache do Flutter
+build/
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+
+# Plugins do Flutter
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# IDEs / Editor
+.idea/
+.vscode/
+
+# Plataformas compiladas (não versionar, serão geradas a partir do código Dart)
+# Geralmente android/ e ios/ gerados pelo Flutter não precisam subir no Git,
+# pois são recompilados a partir do código Dart.
+android/
+ios/
+macos/
+linux/
+windows/
+web/
+
+# Logs
+*.log
+
+# Outros arquivos gerados
+*.iml
+*.hprof
+*.DS_Store
+*.apk
+*.ipa
+*.keystore
+
+# -------------------------------
+# Comentário explicativo
+# -------------------------------
+# Este gitignore cobre tanto o back-end (Java/Spring Boot) quanto o front-end (Flutter),
+# ignorando arquivos compilados, caches, IDEs, logs e plataformas geradas automaticamente.
+>>>>>>> develop
